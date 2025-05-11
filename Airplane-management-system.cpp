@@ -241,6 +241,72 @@ void searchByDestination() {
     }
     if (!found) cout << "No flights found!\n";
 }
+// ===================== BOOKING FUNCTIONS =====================
+/** **Function**: Handles flight booking */
+void bookFlight() {
+    viewAllFlights();
+    string flightNo;
+    cout << "\nEnter flight number: ";
+    cin >> flightNo;
+    
+    auto flight = find_if(flights.begin(), flights.end(), 
+        [&flightNo](const Flight& f) { return f.flightNo == flightNo; });
+    
+    if (flight == flights.end()) {
+        cout << "Flight not found!\n";
+        return;
+    }
+
+    if (flight->seats <= 0) {
+        cout << "No seats available!\n";
+        return;
+    }
+
+    Passenger p;
+    do {
+        cout << "Enter your name (max 20 chars): ";
+        cin.ignore();
+        getline(cin, p.name);
+    } while (!validateInput(p.name));
+
+    do {
+        cout << "Enter passport (max 10 chars): ";
+        cin >> p.passport;
+    } while (!validatePassport(p.passport));
+
+    do {
+        cout << "Enter ID (max 10 digits): ";
+        cin >> p.id;
+    } while (!validateID(p.id));
+
+    do {
+        cout << "Enter phone (max 15 digits): ";
+        cin >> p.contact;
+    } while (!validatePhone(p.contact));
+
+    cout << "\nTotal to pay: $" << flight->price;
+    cout << "\nConfirm payment? (1=Yes, 0=No): ";
+    int confirm;
+    cin >> confirm;
+
+    if (confirm == 1) {
+        Booking b;
+        b.bookingId = "B" + to_string(bookings.size() + 1000);
+        b.flightNo = flightNo;
+        b.passengerId = p.id;
+        b.bookingTime = getCurrentTime();
+        b.isPaid = true;
+
+        flight->seats--;
+        passengers.push_back(p);
+        bookings.push_back(b);
+        saveData();
+
+        cout << "\nBooking successful! Your Booking ID: " << b.bookingId << "\n";
+    } else {
+        cout << "Booking cancelled.\n";
+    }
+}
 
 // ===================== ADMIN FUNCTIONS =====================
 /** **Function**: Verifies admin password */
