@@ -321,6 +321,82 @@ bool authenticateAdmin() {
     return true;
 }
 
+/** **Function**: Adds new aircraft */
+void addAircraft() {
+    Aircraft a;
+    cout << "Enter plane model: ";
+    cin.ignore();
+    getline(cin, a.model);
+    
+    cout << "Enter total seats: ";
+    cin >> a.totalSeats;
+    
+    cout << "Enter features (comma separated): ";
+    string features;
+    cin.ignore();
+    getline(cin, features);
+    
+    stringstream ss(features);
+    string feature;
+    while (getline(ss, feature, ',')) {
+        a.features.push_back(feature);
+    }
+    
+    aircrafts.push_back(a);
+    cout << "Aircraft added successfully!\n";
+}
+
+/** **Function**: Adds new flight */
+void addFlight() {
+    if (aircrafts.empty()) {
+        cout << "No aircrafts available! Add one first.\n";
+        return;
+    }
+
+    cout << "\nAvailable Aircrafts:\n";
+    for (const auto& a : aircrafts) {
+        cout << "- " << a.model << " (" << a.totalSeats << " seats)\n";
+    }
+
+    Flight f;
+    cout << "\nEnter flight number: ";
+    cin >> f.flightNo;
+    
+    cout << "Select plane model: ";
+    string selectedModel;
+    cin.ignore();
+    getline(cin, selectedModel);
+    
+    auto plane = find_if(aircrafts.begin(), aircrafts.end(),
+        [&selectedModel](const Aircraft& a) { return a.model == selectedModel; });
+    
+    if (plane == aircrafts.end()) {
+        cout << "Invalid plane model!\n";
+        return;
+    }
+
+    f.plane = plane->model;
+    f.seats = plane->totalSeats;
+    
+    cout << "Enter destination: ";
+    getline(cin, f.destination);
+    
+    cout << "Enter day/time: ";
+    getline(cin, f.dayTime);
+    
+    cout << "Enter distance: ";
+    getline(cin, f.distance);
+    
+    cout << "Enter duration: ";
+    getline(cin, f.duration);
+    
+    cout << "Enter price: $";
+    cin >> f.price;
+
+    flights.push_back(f);
+    saveData();
+    cout << "Flight added successfully using " << plane->model << "!\n";
+}
 // ===================== MENU FUNCTIONS =====================
 /** **Function**: Displays passenger menu */
 void passengerMenu() {
