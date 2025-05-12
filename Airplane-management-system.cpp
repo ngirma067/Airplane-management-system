@@ -241,6 +241,7 @@ void searchByDestination() {
     }
     if (!found) cout << "No flights found!\n";
 }
+
 // ===================== BOOKING FUNCTIONS =====================
 /** **Function**: Handles flight booking */
 void bookFlight() {
@@ -306,6 +307,31 @@ void bookFlight() {
     } else {
         cout << "Booking cancelled.\n";
     }
+}
+/** **Function**: Cancels a booking */
+void cancelBooking() {
+    string bookingId;
+    cout << "Enter booking ID: ";
+    cin >> bookingId;
+
+    auto booking = find_if(bookings.begin(), bookings.end(), 
+        [&bookingId](const Booking& b) { return b.bookingId == bookingId; });
+
+    if (booking == bookings.end()) {
+        cout << "Booking not found!\n";
+        return;
+    }
+
+    auto flight = find_if(flights.begin(), flights.end(), 
+        [&booking](const Flight& f) { return f.flightNo == booking->flightNo; });
+
+    if (flight != flights.end()) {
+        flight->seats++;
+    }
+
+    bookings.erase(booking);
+    saveData();
+    cout << "Booking cancelled successfully!\n";
 }
 
 // ===================== ADMIN FUNCTIONS =====================
