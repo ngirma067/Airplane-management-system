@@ -423,6 +423,58 @@ void addFlight() {
     saveData();
     cout << "Flight added successfully using " << plane->model << "!\n";
 }
+/** **Function**: Admin cancels any booking */
+void adminCancelBooking() {
+    viewAllBookings();
+    string bookingId;
+    cout << "Enter booking ID to cancel: ";
+    cin >> bookingId;
+
+    auto booking = find_if(bookings.begin(), bookings.end(), 
+        [&bookingId](const Booking& b) { return b.bookingId == bookingId; });
+
+    if (booking == bookings.end()) {
+        cout << "Booking not found!\n";
+        return;
+    }
+
+    auto flight = find_if(flights.begin(), flights.end(), 
+        [&booking](const Flight& f) { return f.flightNo == booking->flightNo; });
+
+    if (flight != flights.end()) {
+        flight->seats++;
+    }
+
+    bookings.erase(booking);
+    saveData();
+    cout << "Admin: Booking cancelled successfully!\n";
+}
+
+/** **Function**: Auto-cancels unpaid bookings after 24 hours */
+void autoCancelUnpaid() {
+    const time_t now = getCurrentTime();
+    const time_t twentyFourHours = 24 * 60 * 60;
+
+    int cancelled = 0;
+    for (auto it = bookings.begin(); it != bookings.end(); ) {
+        if (!it->isPaid && (now - it->bookingTime) > twentyFourHours) {
+            auto flight = find_if(flights.begin(), flights.end(), 
+                [&it](const Flight& f) { return f.flightNo == it->flightNo; });
+            if (flight != flights.end()) flight->seats++;
+            it = bookings.erase(it);
+            cancelled++;
+        } else {
+            ++it;
+        }
+    }
+
+    if (cancelled > 0) {
+        saveData();
+        cout << "Admin: Cancelled " << cancelled << " unpaid bookings.\n";
+    } else {
+        cout << "No unpaid bookings to cancel.\n";
+    }
+}
 // ===================== MENU FUNCTIONS =====================
 /** **Function**: Displays passenger menu */
 void passengerMenu() {
