@@ -423,6 +423,30 @@ void addFlight() {
     saveData();
     cout << "Flight added successfully using " << plane->model << "!\n";
 }
+/** **Function**: Views all passengers */
+void viewAllPassengers() {
+    cout << "\n===== ALL PASSENGERS =====\n";
+    cout << left << setw(20) << "Name" << setw(12) << "Passport" 
+         << setw(12) << "ID" << "Contact\n";
+    for (const auto& p : passengers) {
+        cout << setw(20) << p.name << setw(12) << p.passport 
+             << setw(12) << p.id << p.contact << "\n";
+    }
+}
+
+/** **Function**: Views all bookings */
+void viewAllBookings() {
+    cout << "\n===== ALL BOOKINGS =====\n";
+    cout << left << setw(10) << "Booking ID" << setw(10) << "Flight" 
+         << setw(12) << "Passenger ID" << setw(20) << "Booking Time" 
+         << "Status\n";
+    for (const auto& b : bookings) {
+        cout << setw(10) << b.bookingId << setw(10) << b.flightNo 
+             << setw(12) << b.passengerId << setw(20) << timeToString(b.bookingTime) 
+             << (b.isPaid ? "Paid" : "Unpaid") << "\n";
+    }
+}
+
 /** **Function**: Admin cancels any booking */
 void adminCancelBooking() {
     viewAllBookings();
